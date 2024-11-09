@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """
-Module for filtering log messages.
+Module for filtering log messages and creating a logger.
 """
 
 import re
 import logging
 from typing import List
+
+# Define the PII fields to be redacted
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
 def filter_datum(fields: List[str], redaction: str, message: str,
@@ -55,3 +58,23 @@ class RedactingFormatter(logging.Formatter):
         original_message = super().format(record)
         return filter_datum(self.fields, self.REDACTION,
                             original_message, self.SEPARATOR)
+
+
+def get_logger() -> logging.Logger:
+    """
+    Creates a logger named 'user_data' that logs up to INFO level
+    and has a StreamHandler with RedactingFormatter.
+
+    Returns:
+        logging.Logger: Configured logger object.
+    """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    stream_handler = logging.StreamHandler()
+    formatter = RedactingFormatter(fields=PII_FIELDS)
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
+
+    return logger
