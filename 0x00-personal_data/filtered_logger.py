@@ -6,8 +6,8 @@ Module for filtering log messages and creating a logger.
 import os
 import re
 import logging
-from typing import List
 import mysql.connector
+from typing import List
 from mysql.connector import connection
 
 # Define the PII fields to be redacted
@@ -101,3 +101,24 @@ def get_db() -> connection.MySQLConnection:
         host=host,
         database=database
     )
+
+
+def main() -> None:
+    """
+    Main function to retrieve and display user data in a filtered format.
+    """
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT name, email, phone, ssn, password, ip, last_login, user_agent FROM users;")
+    logger = get_logger()
+    
+    for (name, email, phone, ssn, password, ip, last_login, user_agent) in cursor:
+        row = f"name={name}; email={email}; phone={phone}; ssn={ssn}; password={password}; ip={ip}; last_login={last_login}; user_agent={user_agent};"
+        logger.info(row)
+    
+    cursor.close()
+    db.close()
+
+
+if __name__ == "__main__":
+    main()
