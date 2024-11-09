@@ -3,9 +3,12 @@
 Module for filtering log messages and creating a logger.
 """
 
+import os
 import re
 import logging
 from typing import List
+import mysql.connector
+from mysql.connector import connection
 
 # Define the PII fields to be redacted
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
@@ -78,3 +81,23 @@ def get_logger() -> logging.Logger:
     logger.addHandler(stream_handler)
 
     return logger
+
+
+def get_db() -> connection.MySQLConnection:
+    """
+    Connects to the database using credentials from environment variables.
+
+    Returns:
+        connection.MySQLConnection: Database connector object.
+    """
+    username = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
+    password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
+    host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
+    database = os.getenv('PERSONAL_DATA_DB_NAME', '')
+
+    return mysql.connector.connect(
+        user=username,
+        password=password,
+        host=host,
+        database=database
+    )
