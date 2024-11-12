@@ -15,6 +15,9 @@ class Auth:
         path = path.rstrip('/')
 
         for ex_path in excluded_paths:
+            if ex_path.endswith('*'):
+                if path.startswith(ex_path.rstrip('*')):
+                    return False
             if ex_path.rstrip('/') == path:
                 return False
         return True
