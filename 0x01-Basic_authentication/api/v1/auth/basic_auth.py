@@ -73,7 +73,6 @@ class BasicAuth(Auth):
     def current_user(self, request=None) -> TypeVar('User'):
         """retrieves the User
         """
-        epa = self.extract_base64_authorization_header()
         auth_head = self.authorization_header(request)
         if auth_head is None:
             return None
@@ -86,7 +85,7 @@ class BasicAuth(Auth):
         if decoded_header is None:
             return None
 
-        user_email, user_password = epa(decoded_header)
+        user_email, user_password = self.extract_base64_authorization_header(decoded_header)
         if user_email is None or user_password is None:
             return None
 
