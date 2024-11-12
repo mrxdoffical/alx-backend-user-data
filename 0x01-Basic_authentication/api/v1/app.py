@@ -28,11 +28,23 @@ def not_authirized(error) -> str:
     return jsonify({"error": "Unauthorized"}), 401
 
 
+@app.errorhandler(403)
+def forbidden(error) -> str:
+    """authorized but shouldn't be here function
+    """
+    return jsonify({"error": "Forbidden"}), 403
+
+
 @app.route('/unauthorized')
 def unauthorized_route():
     """triggers abort 401
     """
     abort(401)
+
+
+@app.route('/forbidden')
+def forbidden_function():
+    abort(403)
 
 
 if __name__ == "__main__":
