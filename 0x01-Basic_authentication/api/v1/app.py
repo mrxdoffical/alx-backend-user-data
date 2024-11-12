@@ -25,7 +25,6 @@ def not_found(error) -> str:
 def not_authirized(error) -> str:
     """not authorized handler
     """
-    abort(401)
     return jsonify({"error": "Unauthorized"}), 401
 
 
