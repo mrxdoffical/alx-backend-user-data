@@ -11,6 +11,7 @@ Supported auth types:
     - basic_auth: Basic authentication with Base64
     - session_auth: Session-based authentication
     - session_exp_auth: Session authentication with expiration
+    - session_db_auth: Session authentication with database storage
 """
 from os import getenv
 from api.v1.views import app_views
@@ -36,6 +37,9 @@ elif auth_type == 'session_auth':
 elif auth_type == 'session_exp_auth':
     from api.v1.auth.session_exp_auth import SessionExpAuth
     auth = SessionExpAuth()
+elif auth_type == 'session_db_auth':
+    from api.v1.auth.session_db_auth import SessionDBAuth
+    auth = SessionDBAuth()
 
 
 @app.before_request
