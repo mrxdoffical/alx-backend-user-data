@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-"""Module for session authentication views
+"""Session authentication views
 """
+from flask import jsonify, request
 from api.v1.views import app_views
-from flask import abort, jsonify, request
 from models.user import User
 from os import getenv
 
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
-def login():
-    """Handle user login
+def login() -> str:
+    """POST /api/v1/auth_session/login
+    Return:
+      - Response with user's info and cookie
     """
     email = request.form.get('email')
     if not email:
