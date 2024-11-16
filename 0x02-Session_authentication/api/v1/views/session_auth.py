@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
-""" Module of Session Authentication views
+"""
+Session Authentication Views Module
+================================
+
+This module contains the views/routes for the session authentication system:
+    - /auth_session/login: Handles user login and session creation
+    - /auth_session/logout: Handles user logout and session destruction
+
+Each route is properly documented with its purpose, parameters,
+and possible return values and status codes.
 """
 from flask import jsonify, request, abort
 from api.v1.views import app_views
@@ -9,15 +18,25 @@ from os import getenv
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def login() -> str:
-    """ POST /api/v1/auth_session/login
-    JSON body:
-      - email
-      - password
-    Return:
-      - User object JSON represented
-      - 400 if email or password is missing
-      - 404 if no user is found for the email
-      - 401 if the password is wrong
+    """
+    POST /api/v1/auth_session/login
+    ==============================
+    Handles user login and creates a new session.
+
+    Form Parameters:
+        - email: User's email address
+        - password: User's password
+
+    Returns:
+        - 400: If email or password is missing
+            {"error": "email missing"}
+            {"error": "password missing"}
+        - 404: If no user is found for the email
+            {"error": "no user found for this email"}
+        - 401: If the password is incorrect
+            {"error": "wrong password"}
+        - 200: If login is successful
+            {User object JSON} + Set-Cookie header
     """
     email = request.form.get('email')
     if not email:
@@ -50,10 +69,16 @@ def login() -> str:
 @app_views.route('/auth_session/logout', methods=['DELETE'],
                  strict_slashes=False)
 def logout() -> str:
-    """ DELETE /api/v1/auth_session/logout
-    Return:
-      - Empty JSON object
-      - 404 if session cannot be destroyed
+    """
+    DELETE /api/v1/auth_session/logout
+    ================================
+    Handles user logout by destroying the session.
+
+    Returns:
+        - 404: If the session could not be destroyed
+            {"error": "Not found"}
+        - 200: If logout is successful
+            {}
     """
     from api.v1.app import auth
     if not auth.destroy_session(request):
