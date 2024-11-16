@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Session authentication views
+""" Module of Session Authentication views
 """
 from flask import jsonify, request
 from api.v1.views import app_views
@@ -9,9 +9,15 @@ from os import getenv
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def login() -> str:
-    """POST /api/v1/auth_session/login
+    """ POST /api/v1/auth_session/login
+    JSON body:
+      - email
+      - password
     Return:
-      - Response with user's info and cookie
+      - User object JSON represented
+      - 400 if email or password is missing
+      - 404 if no user is found for the email
+      - 401 if the password is wrong
     """
     email = request.form.get('email')
     if not email:
