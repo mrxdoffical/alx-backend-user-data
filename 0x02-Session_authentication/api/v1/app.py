@@ -1,6 +1,16 @@
 #!/usr/bin/env python3
 """
 Route module for the API
+====================
+
+This module sets up the Flask application and handles authentication
+based on the AUTH_TYPE environment variable.
+
+Supported auth types:
+    - auth: Basic authentication
+    - basic_auth: Basic authentication with Base64
+    - session_auth: Session-based authentication
+    - session_exp_auth: Session authentication with expiration
 """
 from os import getenv
 from api.v1.views import app_views
@@ -23,12 +33,21 @@ elif auth_type == 'basic_auth':
 elif auth_type == 'session_auth':
     from api.v1.auth.session_auth import SessionAuth
     auth = SessionAuth()
+elif auth_type == 'session_exp_auth':
+    from api.v1.auth.session_exp_auth import SessionExpAuth
+    auth = SessionExpAuth()
 
 
 @app.before_request
 def before_request_func() -> None:
-    """Before request handler
-    Validates all requests to secure the API
+    """
+    Before request handler
+    ===================
+
+    Validates all requests to secure the API:
+        - Checks if authentication is required
+        - Validates session cookie or authorization header
+        - Sets current user in request object
     """
     if auth is None:
         return
@@ -52,22 +71,19 @@ def before_request_func() -> None:
 
 @app.errorhandler(404)
 def not_found(error) -> str:
-    """Not found handler
-    """
+    """Not found handler"""
     return jsonify({"error": "Not found"}), 404
 
 
 @app.errorhandler(401)
 def unauthorized(error) -> str:
-    """Unauthorized handler
-    """
+    """Unauthorized handler"""
     return jsonify({"error": "Unauthorized"}), 401
 
 
 @app.errorhandler(403)
 def forbidden(error) -> str:
-    """Forbidden handler
-    """
+    """Forbidden handler"""
     return jsonify({"error": "Forbidden"}), 403
 
 
